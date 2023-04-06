@@ -1,0 +1,620 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 24 18:49:46 2023
+
+@author: jerof
+"""
+"""
+FALTA:
+    
+    helps
+    
+    """
+class Myarrey:
+    
+                  
+    
+    def __init__(self,elems, r, c,by_row=True):
+        """
+        define una matriz: r como fila, c como columnnas, con los elementos de elems.
+        Si by_row ==True se lee elems en por filas, sino por columnas"""
+
+    
+        
+        self.elems=elems
+        self.r=r
+        self.c=c
+        self.by_row=by_row
+        
+        
+        self.check_creacion()
+    def check_creacion(self):
+        """comprueba que la lista de elems se pueda repartir entre las filas y las columnas"""
+        if self.c*self.r ==len(self.elems) and self.c>0 and self.r>0:
+            x=1
+        try:
+            test=x
+        except UnboundLocalError :
+            
+            raise ValueError("el numero de elementos la lista no concuerda con el producto entre filas y columnas") from None
+    def check_existencia_col(self,c):
+        """comprueba que la columa c esta en la matriz"""
+        if self.c>=c and c>0:
+            x=1
+        try:
+            test=x
+        except UnboundLocalError :
+            
+            raise ValueError(f"la matriz no tiene {c} columnas") from None
+            
+    def check_existencia_row(self,r):
+        """comprueba que la fila r esta en la matriz"""
+        if self.r>=r and r>0:
+            x=1
+        try:
+            test=x
+        except UnboundLocalError :
+                
+            raise ValueError(f"la matriz no tiene {r} filas") from None
+            
+    def check_elemento(self,m):
+        """comprueba que el elemento m este en la lista de la matriz"""
+        if len(self.elems)>m and m>0:
+            x=1
+        try:
+            test=x
+        except UnboundLocalError :
+                
+            raise ValueError(f"no existe el elemento {m} existe hasta el {len(self.elems)-1}") from None
+        
+    def check_nXn(self):    
+        """comprueba que la matriz es cuadrada"""
+        
+        if self.c==self.r:
+            x=1
+        try:
+            test=x
+        except UnboundLocalError :
+            
+            raise ValueError("No tiene el mismo número de columnas y filas, no pude realizar la accion con una matriz asimetrica")from None
+            
+    def check_matmul(self,array):
+        if type(array)==type(self):
+            check=1
+        try:
+            test=check
+        except UnboundLocalError :
+                
+            raise ValueError("No son dos matrices") from None
+        if self.c==array.r:
+            x=1
+        try:
+            test=x
+        except UnboundLocalError :
+            raise ValueError("no puede multiplicar las matrices si no tiene el mismo numero de filas la matriz izquierda que columna")from None
+    def myprint(self):
+        """imprime la matriz"""
+        print('\n')
+        for k in range(1,self.r+1):
+            print(self.get_row(k))
+        print('\n')
+        return None
+    
+    def get_pos(self, j,k):
+        """devuelve la posicion en la lista de del item ubicado en (j,k) de la matriz"""
+        self.check_existencia_col(k)
+        self.check_existencia_row(j)
+        if self.by_row==True:
+            posicion=((j-1)*self.c+k)-1
+            
+        if self.by_row==False:
+            posicion=((k-1)*self.r+j)-1
+        return posicion
+    
+    def get_coord(self,m):
+        """devuelve las cordenadas del elemento m en la lista"""
+        self.check_elemento(m)
+        if self.by_row==True:
+            j=(m//self.c)+1
+            k=(m%self.c)+1
+        else:
+            k=(m//self.r)+1
+            j=(m%self.r)+1
+            
+        return (j,k)
+    
+    def get_elem(self,j,k):
+        """devuelve el elemento m. Donde (j,k) son las cordenadas"""
+        posicion=self.get_pos(j, k)
+        return self.elems[posicion]
+    
+    def switch(self):
+        """invierte el valor de by_row manteniendo la apariencia de la matrx"""
+        
+        new_elems=[] 
+        contador=0
+        if self.by_row==False:
+            while not contador==self.r:
+                for i in range(contador,len(self.elems),self.r):
+                    new_elems.append(self.elems[i])
+                contador+=1
+            estado =True
+        else:
+            while not contador==self.c:
+                for i in range(contador,len(self.elems),self.c):
+                    new_elems.append(self.elems[i])
+                contador+=1
+            estado=False
+       
+           
+        return Myarrey(new_elems,self.r,self.c,estado)   
+
+    def get_row(self,j):
+        """deveulve una fila con los elemntos de la fija j"""
+        self.check_existencia_row(j)
+        
+        new_elems=[] 
+        if self.by_row==False:
+            
+            for i in range(j-1,len(self.elems),self.r):
+                new_elems.append(self.elems[i])
+       
+        else:
+             
+            new_elems=self.elems[(j-1)*self.c :(j)*self.c]
+                
+                
+        return new_elems
+    
+    def get_col(self, k):
+        """deveulve una fila con los elemntos de la columna k"""
+
+        self.check_existencia_col(k)
+        new_elems=[] 
+        if self.by_row==False:
+           new_elems=self.elems[(k-1)*self.r:k*self.r]
+       
+        else:
+            for i in range((k-1),len(self.elems),self.c):
+                new_elems.append(self.elems[i])
+                
+                
+        return new_elems
+                
+    def del_row(self,j) : 
+        """deveulve una copia la instancia de clase pero sin de la fija j"""
+        
+        elems_copy=self.elems.copy()
+        if self.by_row==False:
+            count=0
+            for i in range(0,self.c):
+             
+              elems_copy.pop(self.get_pos(j,self.c-count))  
+              count+=1
+              
+        else:
+            self.check_existencia_row(j)
+            elems_copy=self.elems[0:self.c*(j-1)]+self.elems[self.c*j:len(self.elems)]
+        
+            
+        return Myarrey(elems_copy, self.r-1, self.c,self.by_row)
+        
+    
+    
+    def del_col(self,k):
+        """deveulve una copia la instancia de clase pero sin de la fija k"""
+        elems_copy=self.elems.copy()
+        if self.by_row==True:
+            count=0
+            for i in range(0,self.r):
+              
+              elems_copy.pop(self.get_pos((self.r-count),k))  
+              count+=1
+              
+        else:
+            self.check_existencia_col(k)
+            elems_copy=self.elems[0:self.r*(k-1)]+self.elems[self.r*k:len(self.elems)]
+        
+        return Myarrey(elems_copy, self.r, self.c-1,self.by_row)
+    
+    def swap_rows(self,j,k):
+        """deveulve una copia la instancia de clase pero intercambiando las filas j y k"""
+                 
+        fila_j=self.get_row(j).copy()
+        fila_k=self.get_row(k).copy()
+        new_elems=self.elems.copy()
+        
+        if j==k:
+            None
+        elif self.by_row==True:
+                
+                new_elems[self.get_pos(j, 1):self.get_pos(j, self.c)+1]=fila_k
+                new_elems[self.get_pos(k, 1):self.get_pos(k, self.c)+1]=fila_j
+        else:
+            for i in range(1,self.c+1):
+                new_elems[self.get_pos(j,i)]=fila_k[i-1]
+                new_elems[self.get_pos(k, i)]=fila_j[i-1]
+                
+        return Myarrey(new_elems, self.r, self.c,self.by_row)
+        
+    def swap_cols(self,l,m):
+        """deveulve una copia la instancia de clase pero intercambiando las columnas l y m"""
+        col_l=self.get_col(l).copy()
+        col_m=self.get_col(m).copy()
+        new_elems=self.elems.copy()
+        
+        if l==m:
+            None
+        elif self.by_row==False:
+                
+                new_elems[self.get_pos(1,m):self.get_pos(self.r,m)+1]=col_l
+                new_elems[self.get_pos(1,l):self.get_pos(self.r,l)+1]=col_m
+        else:
+           for i in range(1,self.r+1):
+               
+               new_elems[self.get_pos(i,m)]=col_l[i-1]
+               new_elems[self.get_pos(i,l)]=col_m[i-1]
+                
+        return Myarrey(new_elems, self.r, self.c,self.by_row)        
+            
+    def scale_rows(self,j,x):
+        "multiplica la fila j por x"
+        self.check_existencia_row(j)
+        new_elems=self.elems.copy()
+        
+        if self.by_row==True:
+            for i in range(self.get_pos(j,1),self.get_pos(j, self.c)+1):
+                new_elems[i]=self.elems[i]*x
+            new_matrix=Myarrey(new_elems,self.r,self.c,self.by_row)
+            
+        if self.by_row==False:
+            for i in range(j-1,len(new_elems),self.r):
+                new_elems[i]=self.elems[i]*x
+            new_matrix=Myarrey(new_elems,self.r,self.c,self.by_row)
+        return new_matrix
+    
+    def scale_cols(self,k,x):
+        "multiplica la columna k por x"
+
+        self.check_existencia_col(k)
+        new_elems=self.elems.copy()
+        
+        if self.by_row==False:
+            for i in range(self.get_pos(k,1),self.get_pos(k, self.r)+1):
+                new_elems[i]=self.elems[i]*x
+            new_matrix=Myarrey(new_elems,self.r,self.c,self.by_row)
+            
+        if self.by_row==True:
+            for i in range(k-1,len(new_elems),self.c):
+                new_elems[i]=self.elems[i]*x
+            new_matrix=Myarrey(new_elems,self.r,self.c,self.by_row)
+        return new_matrix
+            
+    
+    def transpose(self):
+        """devuelve la matriz traspuesta"""
+        if self.by_row==True:
+            new_arrey=Myarrey(self.switch().elems, self.c, self.r,self.by_row)
+        else:
+            new_arrey=Myarrey(self.switch().elems, self.c, self.r,self.by_row)
+        return new_arrey
+    
+    def det(self):
+        """optiene el valor del determiante"""
+        self.check_nXn()
+        lista_det=[]
+        
+        if self.r ==2:
+            determinante=self.get_elem(1, 1)*self.get_elem(2, 2)-self.get_elem(1, 2)*self.get_elem(2, 1)
+            
+        else:
+            for i in range(0,self.r):
+
+                fragmento_det=self.get_elem(1, i+1)*self.del_col(i+1).del_row(1).det()
+                
+                if i%2==0:
+                    lista_det.append(fragmento_det)
+                else:
+                    
+                    lista_det.append(-fragmento_det)
+            determinante=sum(lista_det)
+        
+        return determinante
+   
+                
+    def  __matmul__(self,b):
+        """al usar @ multiplica la matriz por otra b del type(Myarrey)"""
+        self.check_matmul(b)
+        new_elems=[0]*self.r*b.c
+        new_arrey=Myarrey(new_elems, self.r, b.c)
+        
+            
+        for i in range(1,self.r+1):
+            fila =self.get_row(i)
+
+            for k in range(1,b.c+1):
+                columna=b.get_col(k)
+
+                total=0
+                for n in zip(fila,columna):
+                    total+=n[1]*n[0]
+
+                new_arrey.elems[new_arrey.get_pos(i,k)]=total
+
+        return new_arrey
+    
+    def __add__(self,n):
+        """al usar el operdador + a cada elemnto de la matriz se le suma n"""
+        if (isinstance(n, int)) or (isinstance(n, float)) :
+            new_elems=self.elems.copy()
+            for i in range(0, len(self.elems)):
+                new_elems[i]=self.elems[i]+n
+                check=1
+                
+        elif type(n)==type(self):
+            new_elems=[]
+            
+            if n.r==self.r and n.c==self.c:
+                lista=list(zip(self.elems,n.elems))
+                for i in lista:
+                    new_elems.append(i[0]+i[1])
+                check=1
+        
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '+' con un objeto Myarrey solo puede utilisar los type: int, float y Myarrey,siempre que las dimenciones sean iguales") from None
+           
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))
+        
+    def __radd__(self, n):
+        """al usar el operdador + a cada elemnto de la matriz se le suma n"""
+        new_elems=self.elems.copy()
+        
+        if (isinstance(n, int)) or (isinstance(n, float)) :
+            for i in range(0, len(self.elems)):
+                new_elems[i]=self.elems[i]+n
+                check=1
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '+' con un objeto Myarrey solo puede utilisar los type: int, float y Myarrey,siempre que las dimenciones sean iguales") from None
+           
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))
+
+    def __sub__(self,n):
+        """al usar el operdador - a cada elemnto de la matriz se le resta n"""
+        if (isinstance(n, int)) or (isinstance(n, float)) :
+            new_elems=self.elems.copy()
+            for i in range(0, len(self.elems)):
+                new_elems[i]=self.elems[i]-n
+                check=1
+                
+        elif type(n)==type(self):
+            new_elems=[]
+            
+            if n.r==self.r and n.c==self.c:
+                lista=list(zip(self.elems,n.elems))
+                for i in lista:
+                    new_elems.append(i[0]-i[1])
+                check=1
+        
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '-' con un objeto Myarrey solo puede utilisar los type: int, float y Myarrey,siempre que las dimenciones sean iguales") from None
+           
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))
+        
+    def __rsub__(self,n):
+        """al usar el operdador - a cada elemnto de la matriz se le resta n"""
+        if (isinstance(n, int)) or (isinstance(n, float)) :
+            new_elems=self.elems.copy()
+            for i in range(0, len(self.elems)):
+                new_elems[i]=n-self.elems[i]
+            check=1
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '-' con un objeto Myarrey solo puede utilisar los type: int, float y Myarrey,siempre que las dimenciones sean iguales") from None        
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))
+    
+    def __mul__(self, n):
+        """al usar el operdador * a cada elemnto de la matriz se le multiplica por n"""
+        if (isinstance(n, int)) or (isinstance(n, float)) :
+            new_elems=self.elems.copy()
+            for i in range(0, len(self.elems)):
+                new_elems[i]=self.elems[i]*n
+                check=1
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '*' con un objeto Myarrey solo puede utilisar los type: int, float ") from None        
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))    
+                
+    def __rmul__(self, n):
+        """al usar el operdador * a cada elemnto de la matriz se le multiplica por n"""
+        if (isinstance(n, int)) or (isinstance(n, float)) :
+            new_elems=self.elems.copy()
+            for i in range(0, len(self.elems)):
+                new_elems[i]=self.elems[i]*n
+                check=1
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '*' con un objeto Myarrey solo puede utilisar los type: int, float ") from None        
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))              
+    
+    def __pow__(self,n):
+        """al usar el operdador ** a cada elemnto de la matriz se le eleva a la n"""
+        if (isinstance(n, int))  :
+            new_elems=self.elems.copy()
+            for i in range(0, len(self.elems)):
+                new_elems[i]=self.elems[i]**n
+                check=1
+        try:
+            prueba=check
+            
+        except UnboundLocalError :
+            raise ValueError (" el operador '**' con un objeto Myarrey solo puede utilisar los type: int") from None        
+        return (Myarrey(new_elems, self.r, self.c,self.by_row))    
+
+    def swap_rows_V(self,j,k):
+        """toma j,k =int , e intercambia dichas filas de la matriz"""
+        self.check_existencia_row(j)
+        
+        self.check_existencia_row(k)
+        count=0
+        new_arrey=self.matriz_identidad(self.r,self.r, 0)
+        for i in range(0,new_arrey.r*new_arrey.c,new_arrey.r):
+            if count+1==j:
+                
+                new_arrey.elems[i+k-1]=1
+            elif count+1==k:
+                new_arrey.elems[i+j-1]=1
+            else:
+                new_arrey.elems[i+count]=1
+
+            count+=1
+        
+        
+        
+        return new_arrey@self
+    
+    def swap_cols_V(self,j,k):
+        """toma j,k =int , e intercambia dichas columnas de la matriz"""
+        self.check_existencia_col(j)
+        
+        self.check_existencia_col(k)
+        count=0
+        new_arrey=self.matriz_identidad(self.c,self.c, 0)
+        for i in range(0,new_arrey.r*new_arrey.c,new_arrey.c):
+            if count+1==j:
+                
+                new_arrey.elems[i+k-1]=1
+            elif count+1==k:
+                new_arrey.elems[i+j-1]=1
+            else:
+                new_arrey.elems[i+count]=1
+
+            count+=1
+        
+        
+        
+        return self@new_arrey
+    
+    def del_col_V(self,j):
+        """toma j =int, y elimina la columna j"""
+        self.check_existencia_col(j)
+        identidad=self.matriz_identidad_cortada_col(j)
+        
+        return self@identidad
+       
+    def del_row_V(self, j):
+       """toma j =int, y elimina la fila j"""
+       self.check_existencia_row(j)
+       identidad=self.matriz_identidad_cortada_row(j)
+       
+       return identidad@self
+        
+        
+        
+    def matriz_identidad(self,r,c,identidad):
+        """crea una matriz de r*c dimenciones, si identidad =1/True o de 0 si es =0/False"""
+        elems=[0]*(r*c)
+        count=0
+        if identidad!=0 and identidad!=1:
+            print ("identidad no es un valor conocido,1/0, se devuelve una matriz de 0 ")
+        
+        elif identidad==True :    
+            if r*c==r**2:
+                prueba=1
+            try:
+                check=prueba
+                
+            except UnboundLocalError :
+                raise ValueError ("solo puede generar matrices identidad simetricas ,r=c") from None        
+            
+            for i in range(0,r*c,r):
+
+               elems[i+count]=1
+               count+=1
+            matriz=Myarrey(elems,r,c,self.by_row)
+           
+        else:
+            matriz=Myarrey(elems,r,c,self.by_row)
+        return matriz
+    
+    def matriz_identidad_cortada_col(self,j):
+        """crea una matriz identidad de self.c*self.c y elimina la columna j"""
+
+        identidad=self.matriz_identidad(self.c, self.c, 1)
+        
+        for i in range(identidad.c*identidad.r-1-(identidad.c-j), -1,-self.c):
+                
+                identidad.elems.pop(i)
+        
+        return Myarrey(identidad.elems, identidad.r, identidad.c-1)
+        
+    def matriz_identidad_cortada_row(self,j):
+        """crea una matriz identidad de self.r*self.r y elimina la fila j"""
+        identidad=self.matriz_identidad(self.r, self.r, 1)
+        #print(identidad.r*identidad.c-1-(identidad.c-j), -1,-self.c)
+        for i in range(j*identidad.c-1,j*identidad.c-identidad.c-1,-1):
+        
+            identidad.elems.pop(i)
+            
+        return Myarrey(identidad.elems, identidad.r-1, identidad.c)
+
+            
+    
+if __name__== '__main__':
+    matrix=Myarrey([2,1,5,1,4,5,33,100,1000,1,5,3,0,12,15,9,4,3,2,1],5,4,False)
+    matrix.myprint()
+    matrix_2=Myarrey([66,5,4,88,2,1,5,12,77],3,3,False)
+    #matrix_2.myprint()
+    #matrix_R=matrix_2@matrix
+    #matrix_R.myprint()
+    #mini=Myarrey([2,1,1,2],2,2)
+    #print(matrix.get_pos(5,3))
+    
+    #print(matrix.get_coord(16))
+    
+    #matrix.switch().myprint()
+    
+    #print(matrix.get_col(2))
+    #print(matrix.get_row(3))
+    #print(matrix.get_elem(1,5))
+    
+    #matrix_cortada_r=matrix.del_row(1)
+    #matrix_cortada_c=matrix.del_col(3)
+    #matrix_cortada_r.myprint()
+    #matrix_cortada_c.myprint()
+    
+    #matrix_swap_r=matrix.swap_rows(4, 1)
+    #matrix_swap_r.myprint()
+    #matrix_swap_c=matrix.swap_cols(1,3)
+    #matrix_swap_c.myprint()
+    #matrix_trans=matrix.transpose()
+    #matrix_trans.myprint()
+    #matrix_scale_r=matrix.scale_rows(1, 100)
+    #matrix_scale_r.myprint()
+    
+    #print(matrix.det())
+    #mini.myprint()
+    #print(mini.det())
+    #(matrix**3).myprint()
+    #m=matrix.matriz_identidad(3, 3, 1)
+    #m.myprint()    
+    matrix.del_row_V(5).myprint()
+    
+    
+    
+    
+    
